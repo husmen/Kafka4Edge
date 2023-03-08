@@ -1,0 +1,5 @@
+kafka-python3==3.0.0
+confluent-kafka==2.0.2
+fastapi==0.93.0
+uvicorn[standard]==0.20.0
+msgpack==1.0.4
