@@ -192,4 +192,9 @@ pyrightconfig.json
 .history
 .ionide
 
+# Kafka Volumes
+mongo-db/
+zookeeper/
+kafka/
+
 # End of https://www.toptal.com/developers/gitignore/api/python,visualstudiocode
