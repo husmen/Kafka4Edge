@@ -6,18 +6,11 @@ Demonstrating Data Offloading for Digital Twins with Kafka - Project for  521290
 Run the cluster, remove `-d` to watch logs.
 
 ```bash
-docker compose up -d --build
+docker compose up -d
 ```
 
-Then check web api on [http://localhost:8000/docs](http://localhost:8000/docs).
+Check MongoDB Client on port 3000 [http://localhost:3000](http://localhost:8000/docs).
 
-To run outside docker, comment out `producer-0` service in `docker-compose.yml` and run
-
-```bash
-python demo/producer.py
-```
-
-**N.B.** only second method is working for now
 
 ## TODO
 - [x] Kafka cluster configuration
