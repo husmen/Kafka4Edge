@@ -22,11 +22,11 @@ python demo/producer.py
 ## TODO
 - [x] Kafka cluster configuration
 - [ ] Kafka edge node configuration, to join main cluster
-- [x] Simple Producer
-- [ ] Simple Consumer
+- [x] MQTT Source
+- [x] MongoDB Sink
 - [ ] Multithreaded Producer(s), to simulate multi sensor nodes and larger data loads
 - [ ] Benchmarking, [more info](https://www.ericsson.com/4a492d/assets/local/reports-papers/ericsson-technology-review/docs/2021/xr-and-5g-extended-reality-at-scale-with-time-critical-communication.pdf)
-- [ ] Attach to ditto, maybe?
+- [] Attach to ditto, maybe?
 
 ## References
 -
