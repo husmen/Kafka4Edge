@@ -1,0 +1,48 @@
+version: "3"
+
+services:
+  kafka-3:
+    # https://github.com/bitnami/containers/issues/16243
+    image: 'bitnami/kafka:3.4'
+    container_name: kafka-3
+    ports:
+      - '9095:9092'
+      - '19092'
+    environment:
+      - KAFKA_NODE_ID=3
+      - KAFKA_BROKER_ID=3
+      - KAFKA_ENABLE_KRAFT=yes
+      - KAFKA_KRAFT_CLUSTER_ID=gdnQy0i5QTe2uzhRxuyYwg
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:19092
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka-3:9092
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka-0:19092,1@kafka-1:19092,2@kafka-2:19092,3@kafka-3:19092
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    volumes:
+      - kafka_3_data:/bitnami/kafka
+    networks:
+      - kafka_cluster
+
+  producer-demo:
+    build: demo/
+    # hostname: producer-demo
+    container_name: producer-demo
+    ports:
+      - 8000:80
+    command: python producer.py
+    # volumes:
+    #   - producer_demo_data:/app
+    networks:
+      - kafka_cluster
+
+volumes:
+  kafka_3_data:
+    driver: local
+  # producer_demo_data:
+  #   driver: local
+
+networks:
+  kafka_cluster:
+    driver: bridge
