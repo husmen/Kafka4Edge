@@ -73,14 +73,14 @@ services:
     networks:
       - kafka_cluster
 
-  # mosquitto:
-  #   image: eclipse-mosquitto:1.5.5
-  #   hostname: mosquitto
-  #   container_name: mosquitto
-  #   expose:
-  #     - "1883"
-  #   ports:
-  #     - "1883:1883"
+  mosquitto:
+    image: eclipse-mosquitto:1.5.5
+    hostname: mosquitto
+    container_name: mosquitto
+    expose:
+      - "1883"
+    ports:
+      - "1883:1883"
 
   kafka-connect:
     image: confluentinc/cp-kafka-connect:7.3.2
