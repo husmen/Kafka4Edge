@@ -25,23 +25,20 @@ services:
     networks:
       - kafka_cluster
 
-  producer-demo:
-    build: demo/
-    # hostname: producer-demo
-    container_name: producer-demo
+  demo-producer:
+    build: 
+      context: .
+      dockerfile: demo/producer/Dockerfile
+    container_name: demo-producer
     ports:
       - 8000:80
     command: python producer.py
-    # volumes:
-    #   - producer_demo_data:/app
     networks:
       - kafka_cluster
 
 volumes:
   kafka_3_data:
     driver: local
-  # producer_demo_data:
-  #   driver: local
 
 networks:
   kafka_cluster:

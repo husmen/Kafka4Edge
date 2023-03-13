@@ -2,8 +2,7 @@ version: '3'
 
 services:
   kafka-0:
-    image: 'bitnami/kafka:3.4'
-    # hostname: kafka-0
+    image: bitnami/kafka:3.4
     container_name: kafka-0
     ports:
       - '9092:9092'
@@ -20,14 +19,22 @@ services:
       - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka-0:9092
       - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka-0:19092
       - ALLOW_PLAINTEXT_LISTENER=yes
+      # https://docs.confluent.io/platform/current/installation/docker/operations/monitoring.html
+      # https://stackoverflow.com/questions/50524643/kafka-best-practices-how-to-set-recommended-setting-for-jvm
+      # - KAFKA_JMX_PORT=7071
+      # - KAFKA_JMX_OPTS="-Djava.rmi.server.hostname=kafka-0 -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.authenticate=false  -Dcom.sun.management.jmxremote.ssl=false"
+      # - KAFKA_JMX_HOSTNAME=kafka-jmx-0
+      # - KAFKA_JMX_OPTS="-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false  -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=$J7071"
+      # - KAFKA_JMX_OPTS="-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=kafka-0 -Djava.net.preferIPv4Stack=true"
+      # - JMX_PORT=7071
+      # - KAFKA_OPTS="-javaagent:/usr/app/jmx_prometheus_javaagent.jar=7071:/usr/app/prom-jmx-agent-config.yml"
     volumes:
       - kafka_0_data:/bitnami/kafka
     networks:
       - kafka_cluster
 
   kafka-1:
-    image: 'bitnami/kafka:3.4'
-    # hostname: kafka-1
+    image: bitnami/kafka:3.4
     container_name: kafka-1
     ports:
       - '9093:9092'
@@ -50,8 +57,7 @@ services:
       - kafka_cluster
 
   kafka-2:
-    image: 'bitnami/kafka:3.4'
-    # hostname: kafka-2
+    image: bitnami/kafka:3.4
     container_name: kafka-2
     ports:
       - '9094:9092'
@@ -73,8 +79,44 @@ services:
     networks:
       - kafka_cluster
 
+  # schema-registry:
+  #   image: confluentinc/cp-schema-registry:7.3.2
+  #   container_name: schema-registry
+  #   depends_on:
+  #     - kafka-0
+  #     - kafka-1
+  #     - kafka-2
+  #   environment:
+  #     SCHEMA_REGISTRY_HOST_NAME: "0.0.0.0"
+  #     SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:9491"
+  #     SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "kafka-0:9192,kafka-1:9192,kafka-2:9192"
+  #   ports:
+  #     - "9491:9491"
+
+
+
+  # kafka-rest:
+  #   image: 'confluentinc/cp-kafka-rest:7.3.2'
+  #   container_name: kafka-rest
+  #   depends_on:
+  #     - kafka-0
+  #     - kafka-1
+  #     - kafka-2
+  #     - schema-registry
+  #   environment:
+  #     KAFKA_REST_ADVERTISED_LISTENERS: "http://localhost:9391"
+  #     # You can't have ACLs without a Kafka authorizer.
+  #     KAFKA_REST_API_ENDPOINTS_BLOCKLIST: "api.v3.acls.*"
+  #     KAFKA_REST_BOOTSTRAP_SERVERS: "kafka-0:9192,kafka-1:9192,kafka-2:9192"
+  #     KAFKA_REST_LISTENERS: "http://0.0.0.0:9391"
+  #     KAFKA_REST_SCHEMA_REGISTRY_URL: "http://schema-registry:9491"
+  #     JMX_PORT: 9392
+  #   ports:
+  #     - "9391:9391"
+  #     - "9392:9392"
+
   mosquitto:
-    image: eclipse-mosquitto:1.5.5
+    image: eclipse-mosquitto:2.0.15
     hostname: mosquitto
     container_name: mosquitto
     expose:
@@ -89,7 +131,7 @@ services:
     ports:
       - "8083:8083"
     environment:
-      CONNECT_BOOTSTRAP_SERVERS: "kafka-0:9092"
+      CONNECT_BOOTSTRAP_SERVERS: "kafka-0:9092,kafka-1:9092,kafka-2:9092"
       CONNECT_REST_ADVERTISED_HOST_NAME: connect
       CONNECT_REST_PORT: 8083
       CONNECT_GROUP_ID: compose-connect-group
@@ -109,25 +151,27 @@ services:
       - ./sink-connector:/etc/kafka-connect/jars
     depends_on:
       - kafka-0
+      - kafka-1
+      - kafka-2
     networks:
       - kafka_cluster
 
   mongo-db:
-    image: mongo:4.0.5
+    image: mongo:6.0.4
     hostname: mongo-db
     container_name: mongo-db
     expose:
       - "27017"
     ports:
       - "27017:27017"
-    command: --bind_ip_all --smallfiles
+    command: --bind_ip_all # --smallfiles
     volumes:
       - ./mongo-db:/data
     networks:
       - kafka_cluster
 
   mongoclient:
-    image: mongoclient/mongoclient:2.2.0
+    image: mongoclient/mongoclient:4.0.1
     container_name: mongoclient
     hostname: mongoclient
     depends_on:
@@ -141,22 +185,24 @@ services:
       - "3000"
     networks:
       - kafka_cluster
-
+    
   prometheus:
-    image: prom/prometheus:v2.30.3
+    image: prom/prometheus:v2.42.0
+    container_name: prometheus
     ports:
       - "9090:9090"
     volumes:
-      - ./prometheus:/etc/prometheus/
+      - ./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
     networks:
       - kafka_cluster
-    
+
   grafana:
-    image: grafana/grafana:8.2.2
+    image: grafana/grafana:9.4.3
+    container_name: grafana
     ports:
       - "4000:3000"
     user: '472'
@@ -164,6 +210,15 @@ services:
       - GF_SECURITY_ADMING_PASSWORD=password
     depends_on:
       - prometheus
+    networks:
+      - kafka_cluster
+
+  demo-consumer:
+    build: 
+      context: .
+      dockerfile: demo/consumer/Dockerfile
+    container_name: demo-consumer
+    command: python consumer.py
     networks:
       - kafka_cluster
       

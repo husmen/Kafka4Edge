@@ -75,7 +75,7 @@ async def produce_data(node_id: int, car_id: int, data_point_count: int, data_po
         for data_point in dataset[node_id][car_id][:data_point_count]:
             # Asynchronous by default
             data_point.timestamp = datetime.now().isoformat()
-            producer.send('car_data', {f'car_{car_id}': data_point.dict()}).add_callback(on_send_success).add_errback(on_send_error)
+            producer.send('car_data', {f'car_{node_id}{car_id}': data_point.dict()}).add_callback(on_send_success).add_errback(on_send_error)
             await asyncio.sleep(data_point_interval / 1000)
     except Exception as ex:
         logging.error('PRODUCE TASK ERROR: ', exc_info=ex)
