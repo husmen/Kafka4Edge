@@ -9,6 +9,7 @@ import random
 
 from kafka3 import KafkaProducer
 from kafka3.errors import KafkaError
+from kafka import KafkaProducer
 
 producer: Union[KafkaProducer, None] = None
 

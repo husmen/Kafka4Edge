@@ -1,13 +1,33 @@
+
 version: '3'
 
 services:
+  fastdata:
+    image: lensesio/fast-data-dev
+    container_name: fastdata
+    ports:
+      - 3030:3030
+      - 9093:9092
+      - 8081:8081
+    environment:
+      - SAMPLEDATA=0
+      - REST_PORT=0
+      - FORWARDLOGS=0
+      - RUNTESTS=0
+      - DISABLE_JMX=1
+      - CONNECTORS=${CONNECTOR}
+      - WEB_PORT=0
+      - DISABLE=hive-1.1
   mosquitto:
     image: eclipse-mosquitto:1.5.5
     hostname: mosquitto
     container_name: mosquitto
+    depends_on: 
+      - fastdata    
     expose:
       - "1883"
     ports:
+      - "8080:8080"
       - "1883:1883"
   zookeeper:
     image: zookeeper:3.4.9

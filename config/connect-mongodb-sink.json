@@ -1,14 +1,15 @@
 {
     "name": "mongodb-sink",
     "config": {
-        "connector.class": "at.grahsl.kafka.connect.mongodb.MongoDbSinkConnector",
+        "connector.class": "com.mongodb.kafka.connect.MongoSinkConnector",
         "tasks.max": 1,
         "topics": "connect-custom",
-        "mongodb.connection.uri": "mongodb://mongo-db/test?retryWrites=true",
-        "mongodb.collection": "MyCollection",
+        "connection.uri": "mongodb://mongo-db",
+        "collection": "MyCollection",
         "key.converter": "org.apache.kafka.connect.json.JsonConverter",
         "key.converter.schemas.enable": false,
         "value.converter": "org.apache.kafka.connect.json.JsonConverter",
-        "value.converter.schemas.enable": false
+        "value.converter.schemas.enable": false,
+        "database": "test"
     }
 }
