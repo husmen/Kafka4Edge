@@ -23,6 +23,13 @@ curl -d @config/connect-mongodb-sink.json -H "Content-Type: application/json" -X
 Then check:
 - Kafka Producer Web API on [http://localhost:8000/docs](http://localhost:8000/docs).
 - MongoDB Client on port 3000 [http://localhost:3000](http://localhost:3000/).
+- Grafana on [http://localhost:4000](http://localhost:4000).
+
+When opening grafana: 
+- Enter `admin` as username and password
+- Go to Configurations -> Data-Source -> Add Data Source, then select prometheus
+- Enter `http://prometheus:9090` in the URL, Click Save & Test
+
 
 To bring everything down:
 ```bash
@@ -37,6 +44,8 @@ docker-compose -f docker-compose-edge.yml down
 - [ ] Simple Consumer
 - [x] MQTT Source
 - [x] MongoDB Sink
+- [x] Prometheus Monitoring
+- [x] Grafana Visualization
 - [X] Multithreaded Producer(s), to simulate multi sensor nodes and larger data loads
 - [ ] Benchmarking, [more info](https://www.ericsson.com/4a492d/assets/local/reports-papers/ericsson-technology-review/docs/2021/xr-and-5g-extended-reality-at-scale-with-time-critical-communication.pdf)
 - [ ] Attach to ditto, maybe?

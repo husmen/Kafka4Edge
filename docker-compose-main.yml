@@ -142,6 +142,32 @@ services:
     networks:
       - kafka_cluster
 
+  prometheus:
+    image: prom/prometheus:v2.30.3
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus:/etc/prometheus/
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - kafka_cluster
+    
+  grafana:
+    image: grafana/grafana:8.2.2
+    ports:
+      - "4000:3000"
+    user: '472'
+    environment:
+      - GF_SECURITY_ADMING_PASSWORD=password
+    depends_on:
+      - prometheus
+    networks:
+      - kafka_cluster
+      
+
 volumes:
   kafka_0_data:
     driver: local
@@ -149,6 +175,7 @@ volumes:
     driver: local
   kafka_2_data:
     driver: local
+  prometheus_data:
 
 networks:
   kafka_cluster:
