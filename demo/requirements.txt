@@ -1,5 +1,8 @@
+# avro==1.11.1
+# confluent-kafka==2.0.2
 kafka-python3==3.0.0
-confluent-kafka==2.0.2
 fastapi==0.93.0
-uvicorn[standard]==0.20.0
+lz4==4.3.2
 msgpack==1.0.4
+tqdm==4.65.0
+uvicorn[standard]==0.20.0

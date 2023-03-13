@@ -1,0 +1,64 @@
+global:
+  # How frequently to scrape targets by default.
+  # Default 15s
+  scrape_interval: 60s
+  # How frequently to evaluate rules.
+  # Default 15s
+  evaluation_interval: 15s
+
+# scrape_configs:
+#   - job_name: 'kafka'
+#     static_configs:
+#     - targets: ['jmx-kafka-0:7071','jmx-kafka-1:7071', 'jmx-kafka-2:7071']
+#     # - targets: ['jmx-kafka-0:5556','jmx-kafka-1:5556', 'jmx-kafka-2:5556']
+
+scrape_configs:
+  - job_name: 'kafka-0'
+    static_configs:
+    - targets: ['kafka-0:9092']
+
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+
+  - job_name: "kafka-broker"
+    static_configs:
+      - targets:
+          - "kafka-1:9092"
+          - "kafka-2:9092"
+        labels:
+          env: "dev"
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: hostname
+        regex: '([^:]+)(:[0-9]+)?'
+        replacement: '${1}'
+
+
+  - job_name: "kafka-connect"
+    static_configs:
+      - targets:
+          - "kafka-connect:8083"
+        labels:
+          env: "dev"
+          # kafka_connect_cluster_id: "cluster1"
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: hostname
+        regex: '([^:]+)(:[0-9]+)?'
+        replacement: '${1}'
+
+
+  # No producer for the moment in cp-demo
+  # - job_name: 'kafka-producer'
+  #   static_configs:
+  #     - targets:
+  #         - 'kafka1:1235'
+  #       labels:
+  #         env: 'dev'
+  #   relabel_configs:
+  #     - source_labels: [__address__]
+  #       target_label: hostname
+  #       regex: '([^:]+)(:[0-9]+)?'
+  #       replacement: '${1}'
