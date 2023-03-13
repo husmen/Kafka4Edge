@@ -28,7 +28,7 @@ Then check:
 When opening grafana: 
 - Enter `admin` as username and password
 - Go to Configurations -> Data-Source -> Add Data Source, then select prometheus
-- Enter `http://prometheus:9090` in the URL, Click Save & Test
+- Enter `http://kafka4edge_prometheus_1:9090` in the URL, Click Save & Test
 
 
 To bring everything down:
